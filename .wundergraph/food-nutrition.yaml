@@ -26,10 +26,15 @@ paths:
                   results:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        title:
-                          type: string
+                      $ref: '#/components/schemas/Recipe'
       operationId: searchRecipes
+components:
+  schemas:
+    Recipe:
+      title: Recipe
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
