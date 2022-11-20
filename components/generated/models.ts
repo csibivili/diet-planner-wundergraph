@@ -28,7 +28,9 @@ export interface RecipesResponse {
 
 export interface RecipesResponseData {
 	food_searchRecipes?: {
-		id?: number;
-		title?: string;
-	}[];
+		results?: {
+			id?: number;
+			title?: string;
+		}[];
+	};
 }

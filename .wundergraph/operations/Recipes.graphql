@@ -1,6 +1,8 @@
 query Recipes($query: String!) {
 	food_searchRecipes(query: $query) {
-		id
-		title
+		results {
+			id
+			title
+		}
 	}
 }

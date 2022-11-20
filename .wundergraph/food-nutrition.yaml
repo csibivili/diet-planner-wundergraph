@@ -21,17 +21,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Recipe'
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        title:
+                          type: string
       operationId: searchRecipes
-components:
-  schemas:
-    Recipe:
-      title: Recipe
-      type: object
-      properties:
-        id:
-          type: number
-        title:
-          type: string
