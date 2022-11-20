@@ -10,7 +10,7 @@ import {
 	SubscriptionEventHandler,
 	FetchUserRequestOptions,
 } from "@wundergraph/sdk/client";
-import type { DragonsResponse, DragonsResponseData } from "./models";
+import type { RecipesResponse, RecipesInput, RecipesResponseData } from "./models";
 
 export type UserRole = "admin" | "user";
 
@@ -29,13 +29,13 @@ export interface AuthProvider {
 }
 
 export const defaultClientConfig: ClientConfig = {
-	applicationHash: "ea10d8c0",
+	applicationHash: "cae9d8f2",
 	baseURL: "http://localhost:9991",
 	sdkVersion: "0.123.0",
 };
 
 export const operationMetadata: OperationMetadata = {
-	Dragons: {
+	Recipes: {
 		requiresAuthentication: false,
 	},
 };
@@ -89,9 +89,9 @@ export const createClient = (config?: Partial<Omit<ClientConfig, PrivateConfigPr
 };
 
 export type Queries = {
-	Dragons: {
-		input?: undefined;
-		data: DragonsResponseData;
+	Recipes: {
+		input: RecipesInput;
+		data: RecipesResponseData;
 		requiresAuthentication: false;
 		liveQuery: boolean;
 	};
@@ -102,9 +102,9 @@ export type Mutations = {};
 export type Subscriptions = {};
 
 export type LiveQueries = {
-	Dragons: {
-		input?: undefined;
-		data: DragonsResponseData;
+	Recipes: {
+		input: RecipesInput;
+		data: RecipesResponseData;
 		liveQuery: true;
 		requiresAuthentication: false;
 	};

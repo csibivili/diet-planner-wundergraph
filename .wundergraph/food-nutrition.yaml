@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: food
+  version: '1.0'
+servers:
+  - url: 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+paths:
+  '/recipes/complexSearch':
+    parameters:
+      - schema:
+          type: string
+        name: query
+        in: query
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+      operationId: searchRecipes
+components:
+  schemas:
+    Recipe:
+      title: Recipe
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string

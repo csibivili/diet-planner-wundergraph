@@ -1,16 +1,23 @@
-import { authProviders, configureWunderGraphApplication, cors, introspect, templates } from '@wundergraph/sdk';
+import { authProviders, configureWunderGraphApplication, cors, introspect, templates, EnvironmentVariable } from '@wundergraph/sdk';
 import { NextJsTemplate } from '@wundergraph/nextjs/dist/template';
 import server from './wundergraph.server';
 import operations from './wundergraph.operations';
 
-const spaceX = introspect.graphql({
-	apiNamespace: 'spacex',
-	url: 'https://spacex-api.fly.dev/graphql/',
-});
+const food = introspect.openApi({
+	apiNamespace: 'food',
+	source: {
+		kind: 'file',
+		filePath: './food-nutrition.yaml'
+	},
+	headers: builder => 
+		builder
+			.addStaticHeader('X-RapidAPI-Key', new EnvironmentVariable('RAPID_API_KEY'))
+			.addStaticHeader('X-RapidAPI-Host', 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'),
+})
 
 // configureWunderGraph emits the configuration
 configureWunderGraphApplication({
-	apis: [spaceX],
+	apis: [food],
 	server,
 	operations,
 	codeGenerators: [
