@@ -108,6 +108,32 @@ components:
 
 So far only one request parameter is mapped and the result object is neither complete. Only `id` and `title` are returned.
 
+//how to test it?
+
 ### A little frontend
 
-At this point I would like to just list the search results. So I need a *Search* and a *List* component.
+At this point I would like to just list the search results. I have reused what I could from the original template. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query:
+
+```typescript
+const [query, setQuery] = useState('')
+const recipes = useQuery({
+  operationName: 'Recipes',
+  input: {
+    query,
+  }
+})
+```
+
+// takeaway: typesafe
+
+### Get recipe's information
+
+Since the search endpoint provides just few informations about a recipe somehow the details should be retrieved. There is a get by id endpoint for this purpose. It is worth to test again the endpoint on the UI first.
+
+Based on the other endpoint the new endpoint configuration should look like this:
+
+```yaml
+test: test
+```
+
+// testsetstest
