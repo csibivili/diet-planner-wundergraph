@@ -13,7 +13,7 @@ paths:
         in: query
         required: true
     get:
-      summary: Your GET endpoint
+      summary: search endpoint
       tags: []
       responses:
         '200':
@@ -28,6 +28,24 @@ paths:
                     items:
                       $ref: '#/components/schemas/Recipe'
       operationId: searchRecipes
+  '/recipes/{id}/information':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: get info endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+      operationId: getRecipe
 components:
   schemas:
     Recipe:
@@ -37,4 +55,6 @@ components:
         id:
           type: number
         title:
+          type: string
+        instructions:
           type: string

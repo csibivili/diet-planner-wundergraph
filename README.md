@@ -2,7 +2,7 @@
 
 ## The problem
 
-Recently, I have been going to the gym several times a week and I was advised to try to follow a high protein diet. Since I have no knowledge about nutritions and I am a coder it sounds an opportunity to build a new app.
+Recently, I have been going to the gym several times a week and I was advised to try to follow a high protein diet. Since I have no knowledge about nutritions and I am a coder this gives me an opportunity to build a new app.
 
 ## Features
 
@@ -27,7 +27,7 @@ Recently, I have been going to the gym several times a week and I was advised to
 
 ### Getting started
 
-There is a UI provided by RapidApi to test the endpoints. (You can grab your key from there.) After a little expermination I decided to use the **"Search Recipes"** endpoint and the **"Get Recipe Information"**. My point now is to have a minimum working solution. Feel free to use other endpoints with more options.
+There is a UI provided by RapidApi to test the endpoints. (You can also grab your key from there.) After a little expermination I decided to use the **"Search Recipes"** endpoint and the **"Get Recipe Information"**. My point now is to have a minimum working solution. Feel free to use other endpoints with more options.
 
 To consume the RapidApi I will use **WunderGraph**.
 - It provides a **type safe** way to interact with the api
@@ -108,11 +108,29 @@ components:
 
 So far only one request parameter is mapped and the result object is neither complete. Only `id` and `title` are returned.
 
-//how to test it?
+As a last step a graphql operation must be added. Don't forget to pass the parameter!
+
+
+```graphql
+query Recipes($query: String!) {
+	food_searchRecipes(query: $query) {
+		results {
+			id
+			title
+		}
+	}
+}
+```
+
+The referenced query's name is concatenated from two parts: 
+- *food* comes from the base configuration (how we named the api)
+- *searchRecipes* comes from the yaml file's *operationId* property.
+
+> The query can be tested on this url: http://localhost:9991/operations/Recipes?query=pasta
 
 ### A little frontend
 
-At this point I would like to just list the search results. I have reused what I could from the original template. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query:
+At this point I would like to just list the search results. I have reused what I could from the original template. Again, create something nicer if you'd like. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query:
 
 ```typescript
 const [query, setQuery] = useState('')
@@ -124,7 +142,7 @@ const recipes = useQuery({
 })
 ```
 
-// takeaway: typesafe
+> Thanks to the WunderGraph setup now we have autocomplete on the paramater. With one parameter it is not much but imagine it with 10+ items.
 
 ### Get recipe's information
 
@@ -133,7 +151,43 @@ Since the search endpoint provides just few informations about a recipe somehow 
 Based on the other endpoint the new endpoint configuration should look like this:
 
 ```yaml
-test: test
+'/recipes/{id}/information':
+  parameters:
+    - schema:
+        type: string
+      name: id
+      in: path
+      required: true
+  get:
+    summary: get info endpoint
+    tags: []
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+    operationId: getRecipe
 ```
 
-// testsetstest
+A property was added to the Recipe component as well:
+
+```yaml
+instructions:
+  type: string
+```
+
+And the associated query:
+
+```graphql
+query Recipe($id: String!) {
+  food_getRecipe(id: $id) {
+    id
+    title
+    instructions
+  }
+}
+```
+
+> The query can be tested on this url: http://localhost:9991/operations/Recipe?id=603414

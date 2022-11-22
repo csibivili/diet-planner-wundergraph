@@ -1,0 +1,7 @@
+query Recipe($id: String!) {
+  food_getRecipe(id: $id) {
+    id
+    title
+    instructions
+  }
+}
