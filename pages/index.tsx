@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NextPage } from 'next'
+import Link from 'next/link'
 import { useQuery, withWunderGraph } from '../components/generated/nextjs'
 
 const Home: NextPage = () => {
@@ -8,7 +9,7 @@ const Home: NextPage = () => {
     operationName: 'Recipes',
     input: {
       query,
-    }
+    },
   })
   return (
     <div>
@@ -35,14 +36,15 @@ const Home: NextPage = () => {
         <div className="w-full max-w-2xl min-w-64 rounded-2xl bg-blue-50 p-8">
           <ul className="rounded-2xl border border-gray-700 w-full text-gray-900 shadow-xl">
             {recipes.data?.food_searchRecipes?.results.map((recipe, index, arr) => (
-              <li
-                className={`px-6 py-2 cursor-pointer ${index !== arr.length - 1 ? 'border-b' : 'rounded-b-2xl'} ${
-                  index === 0 ? 'rounded-t-2xl' : ''
-                } border-gray-700 w-full overflow-hidden hover:bg-white`}
-                key={recipe.id}
-              >
-                {recipe.title}
-              </li>
+              <Link href={`/${recipe.id}`} key={recipe.id}>
+                <li
+                  className={`px-6 py-2 cursor-pointer ${index !== arr.length - 1 ? 'border-b' : 'rounded-b-2xl'} ${
+                    index === 0 ? 'rounded-t-2xl' : ''
+                  } border-gray-700 w-full overflow-hidden hover:bg-white`}
+                >
+                  {recipe.title}
+                </li>
+              </Link>
             ))}
           </ul>
           <div className="mx-auto flex max-w-sm flex-col items-center"></div>

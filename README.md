@@ -191,3 +191,10 @@ query Recipe($id: String!) {
 ```
 
 > The query can be tested on this url: http://localhost:9991/operations/Recipe?id=603414
+
+### Recipe's details page
+
+1. Add linking to the **index.tsx**. Each listed element should navigate to the */{id}* route
+2. Create details page: **[id].tsx**
+3. Copy everything that we can from the index page
+4. Show the title and the istructions for the current recipe
