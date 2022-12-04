@@ -36,7 +36,7 @@ There is a UI provided by RapidApi to test the endpoints. (You can also grab you
 
 To consume the RapidApi I will use **WunderGraph**.
 - It provides a **type safe** way to interact with the api
-- and a **unified platform** where I will be able to wire other services as well (will be back to this point later).
+- and a **unified platform** where I will be able to wire other services as well (will be interesting later).
 
 ### Setup WunderGraph
 
