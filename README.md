@@ -113,7 +113,7 @@ components:
 
 So far only one request parameter is mapped and the result object is neither complete. Only `id` and `title` are returned.
 
-As a last step a graphql operation must be added. Don't forget to pass the parameter!
+As a last step a graphql query must be created in the **Operations** folder. Don't forget to pass the parameter!
 
 
 ```graphql
