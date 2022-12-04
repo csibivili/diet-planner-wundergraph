@@ -218,7 +218,7 @@ npx create-sst@latest --template=minimal/typescript-starter diet-planner-backend
 ```
 2. Followed [this guide](https://sst.dev/chapters/create-a-dynamodb-table-in-sst.html) to create a table for recipes
 
-My storage stack based on the guide:
+**StorageStack.ts**
 ```typescript
 import { StackContext, Table } from '@serverless-stack/resources'
 
@@ -250,7 +250,7 @@ schema {
 }
 ```
 
-My Api stack:
+**ApiStack.ts**
 ```typescript
 import { AppSyncApi, StackContext, use } from '@serverless-stack/resources'
 import { StorageStack } from './StorageStack'
@@ -278,6 +278,7 @@ export function ApiStack({ stack }: StackContext) {
   // Show the API endpoint in the output
   stack.addOutputs({
     ApiId: api.apiId,
+    ApiKey: api.cdk.graphqlApi.apiKey ?? '',
     APiUrl: api.url,
   })
 
@@ -288,7 +289,7 @@ export function ApiStack({ stack }: StackContext) {
 }
 ```
 
-Schema:
+**schema.graphql**
 ```graphql
 schema {
   query:Query
@@ -297,11 +298,13 @@ schema {
 
 type Recipe {
   recipeId: ID!
+  title: String!
   instructions: String!
 }
 
 input RecipeInput {
   recipeId: ID!
+  title: String!
   instructions: String!
 }
 
@@ -314,7 +317,18 @@ type Mutation {
 }
 ```
 
-getRecipes
+**Recipe.ts**
+```typescript
+type Recipe = {
+  recipeId: string;
+  title: string;
+  instructions: string;
+};
+
+export default Recipe;
+```
+
+**getRecipes.ts**
 ```typescript
 import { DynamoDB } from 'aws-sdk'
 import { Table } from '@serverless-stack/node/table'
@@ -332,7 +346,7 @@ export default async function getRecipes(): Promise<Record<string, unknown>[] | 
 }
 ```
 
-saveRecipe
+**saveRecipe.ts**
 ```typescript
 import { DynamoDB } from 'aws-sdk'
 import { Table } from '@serverless-stack/node/table'
@@ -352,7 +366,7 @@ export default async function createNote(recipe: Recipe): Promise<Recipe> {
 }
 ```
 
-main.ts
+**main.ts**
 ```typescript
 import Recipe from '../Recipe'
 import saveRecipe from './saveRecipe'
@@ -410,3 +424,51 @@ Our stack can be tested in SST Console:
 ![create items](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+12.35.16.png)
 4. Retrieve items
 ![retrieve items](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+12.35.54.png)
+
+### Wire the backend into wundergraph
+
+1. Extend the configuration with introspecting the new GraphQL API
+```typescript
+const dietplanner = introspect.graphql({
+  apiNamespace: 'dietplanner',
+  url: new EnvironmentVariable('DIET_PLANNER_BE_URL'),
+  headers: (builder: IHeadersBuilder) =>
+    builder.addStaticHeader('x-api-key', new EnvironmentVariable('DIET_PLANNER_BE_KEY')),
+})
+
+configureWunderGraphApplication({
+  apis: [food, dietplanner],
+  ...
+```
+2. Add new environment variables, both can can be copied from the terminal where the stack is running.
+
+![keys](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+2.43.43.png)
+
+3. Add new operations
+- ```graphql
+  query MyRecipes {
+    dietplanner_getRecipes {
+      recipeId
+      title
+      instructions
+    }
+  }
+  ```
+
+- ```graphql
+  mutation SaveRecipe($recipe: dietplanner_RecipeInput!) {
+    dietplanner_saveRecipe(recipe: $recipe) {
+      recipeId
+      title
+      instructions
+    }
+  }
+  ```
+
+In the logs you should see these lines:
+```
+2022-12-04T14:51:23+01:00 DEBUG: Registered (3) query operations {"component":"@wundergraph/server"}
+2022-12-04T14:51:23+01:00 DEBUG: Registered (1) mutation operations {"component":"@wundergraph/server"}
+```
+
+### Finish the frontend

@@ -11,12 +11,17 @@ import {
 	FetchUserRequestOptions,
 } from "@wundergraph/sdk/client";
 import type {
+	MyRecipesResponse,
+	MyRecipesResponseData,
 	RecipeResponse,
 	RecipeInput,
 	RecipeResponseData,
 	RecipesResponse,
 	RecipesInput,
 	RecipesResponseData,
+	SaveRecipeResponse,
+	SaveRecipeInput,
+	SaveRecipeResponseData,
 } from "./models";
 
 export type UserRole = "admin" | "user";
@@ -36,16 +41,22 @@ export interface AuthProvider {
 }
 
 export const defaultClientConfig: ClientConfig = {
-	applicationHash: "dcf2df9c",
+	applicationHash: "38599277",
 	baseURL: "http://localhost:9991",
 	sdkVersion: "0.123.0",
 };
 
 export const operationMetadata: OperationMetadata = {
+	MyRecipes: {
+		requiresAuthentication: false,
+	},
 	Recipe: {
 		requiresAuthentication: false,
 	},
 	Recipes: {
+		requiresAuthentication: false,
+	},
+	SaveRecipe: {
 		requiresAuthentication: false,
 	},
 };
@@ -99,6 +110,12 @@ export const createClient = (config?: Partial<Omit<ClientConfig, PrivateConfigPr
 };
 
 export type Queries = {
+	MyRecipes: {
+		input?: undefined;
+		data: MyRecipesResponseData;
+		requiresAuthentication: false;
+		liveQuery: boolean;
+	};
 	Recipe: {
 		input: RecipeInput;
 		data: RecipeResponseData;
@@ -113,11 +130,23 @@ export type Queries = {
 	};
 };
 
-export type Mutations = {};
+export type Mutations = {
+	SaveRecipe: {
+		input: SaveRecipeInput;
+		data: SaveRecipeResponseData;
+		requiresAuthentication: false;
+	};
+};
 
 export type Subscriptions = {};
 
 export type LiveQueries = {
+	MyRecipes: {
+		input?: undefined;
+		data: MyRecipesResponseData;
+		liveQuery: true;
+		requiresAuthentication: false;
+	};
 	Recipe: {
 		input: RecipeInput;
 		data: RecipeResponseData;

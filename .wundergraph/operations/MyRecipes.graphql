@@ -1,0 +1,7 @@
+query MyRecipes {
+  dietplanner_getRecipes {
+    recipeId
+    title
+    instructions
+  }
+}

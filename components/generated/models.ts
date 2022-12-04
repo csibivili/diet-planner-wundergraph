@@ -8,6 +8,16 @@ export interface RecipesInput {
 	query: string;
 }
 
+export interface SaveRecipeInput {
+	recipe: dietplanner_RecipeInput;
+}
+
+export interface dietplanner_RecipeInput {
+	instructions: string;
+	recipeId: string;
+	title: string;
+}
+
 export type JSONValue = string | number | boolean | JSONObject | Array<JSONValue>;
 
 export type JSONObject = { [key: string]: JSONValue };
@@ -25,12 +35,25 @@ export interface InternalRecipesInput {
 	query: string;
 }
 
+export interface InternalSaveRecipeInput {
+	recipe: dietplanner_RecipeInput;
+}
+
 export interface InjectedRecipeInput {
 	id: string;
 }
 
 export interface InjectedRecipesInput {
 	query: string;
+}
+
+export interface InjectedSaveRecipeInput {
+	recipe: dietplanner_RecipeInput;
+}
+
+export interface MyRecipesResponse {
+	data?: MyRecipesResponseData;
+	errors?: ReadonlyArray<GraphQLError>;
 }
 
 export interface RecipeResponse {
@@ -41,6 +64,19 @@ export interface RecipeResponse {
 export interface RecipesResponse {
 	data?: RecipesResponseData;
 	errors?: ReadonlyArray<GraphQLError>;
+}
+
+export interface SaveRecipeResponse {
+	data?: SaveRecipeResponseData;
+	errors?: ReadonlyArray<GraphQLError>;
+}
+
+export interface MyRecipesResponseData {
+	dietplanner_getRecipes?: {
+		recipeId: string;
+		title: string;
+		instructions: string;
+	}[];
 }
 
 export interface RecipeResponseData {
@@ -57,5 +93,13 @@ export interface RecipesResponseData {
 			id?: number;
 			title?: string;
 		}[];
+	};
+}
+
+export interface SaveRecipeResponseData {
+	dietplanner_saveRecipe?: {
+		recipeId: string;
+		title: string;
+		instructions: string;
 	};
 }

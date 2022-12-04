@@ -1,0 +1,7 @@
+mutation SaveRecipe($recipe: dietplanner_RecipeInput!) {
+  dietplanner_saveRecipe(recipe: $recipe) {
+    recipeId
+    title
+    instructions
+  }
+}
