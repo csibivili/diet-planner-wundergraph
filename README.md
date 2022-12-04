@@ -208,5 +208,205 @@ query Recipe($id: String!) {
 3. Copy everything that we can from the index page
 4. Show the title and the istructions for the current recipe
 
-### Save the recipes we like
+### Save and retrieve the recipes we like
 
+A simple GraphQL API can be created in minutes with the help of [SST](https://sst.dev). The goal is to be able to save recipes and later retrieve them.
+
+1. Start with a template:
+```
+npx create-sst@latest --template=minimal/typescript-starter diet-planner-backend
+```
+2. Followed [this guide](https://sst.dev/chapters/create-a-dynamodb-table-in-sst.html) to create a table for recipes
+
+My storage stack based on the guide:
+```typescript
+import { StackContext, Table } from '@serverless-stack/resources'
+
+export function StorageStack({ stack }: StackContext) {
+  // Create the DynamoDB table
+  const table = new Table(stack, 'Recipes', {
+    fields: {
+      recipeId: 'string',
+    },
+    primaryIndex: { partitionKey: 'recipeId' },
+  })
+
+  return {
+    table,
+  }
+}
+```
+
+3. Used [this guide](https://sst.dev/examples/how-to-create-a-serverless-graphql-api-with-aws-appsync.html) for api creation
+
+- My project structure a bit different:
+![project structure](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+12.16.18.png)
+- And I renamed **lambda.ts** to **main.ts**
+- Also I have faced an issue as the top level schema is required for AWS so schema file should start with:
+```graphql
+schema {
+  query:Query
+  mutation: Mutation
+}
+```
+
+My Api stack:
+```typescript
+import { AppSyncApi, StackContext, use } from '@serverless-stack/resources'
+import { StorageStack } from './StorageStack'
+
+export function ApiStack({ stack }: StackContext) {
+  const { table } = use(StorageStack)
+
+  // Create the API
+  const api = new AppSyncApi(stack, 'Api', {
+    schema: 'services/graphql/schema.graphql',
+    defaults: {
+      function: {
+        bind: [table],
+      },
+    },
+    dataSources: {
+      recipes: 'functions/main.handler',
+    },
+    resolvers: {
+      'Query getRecipes': 'recipes',
+      'Mutation saveRecipe': 'recipes',
+    },
+  })
+
+  // Show the API endpoint in the output
+  stack.addOutputs({
+    ApiId: api.apiId,
+    APiUrl: api.url,
+  })
+
+  // Return the API resource
+  return {
+    api,
+  }
+}
+```
+
+Schema:
+```graphql
+schema {
+  query:Query
+  mutation: Mutation
+}
+
+type Recipe {
+  recipeId: ID!
+  instructions: String!
+}
+
+input RecipeInput {
+  recipeId: ID!
+  instructions: String!
+}
+
+type Query {
+  getRecipes: [Recipe]
+}
+
+type Mutation {
+  saveRecipe(recipe: RecipeInput!): Recipe
+}
+```
+
+getRecipes
+```typescript
+import { DynamoDB } from 'aws-sdk'
+import { Table } from '@serverless-stack/node/table'
+
+const dynamoDb = new DynamoDB.DocumentClient()
+
+export default async function getRecipes(): Promise<Record<string, unknown>[] | undefined> {
+  const params = {
+    TableName: Table.Recipes.tableName,
+  }
+
+  const data = await dynamoDb.scan(params).promise()
+
+  return data.Items
+}
+```
+
+saveRecipe
+```typescript
+import { DynamoDB } from 'aws-sdk'
+import { Table } from '@serverless-stack/node/table'
+import Recipe from '../Recipe'
+
+const dynamoDb = new DynamoDB.DocumentClient()
+
+export default async function createNote(recipe: Recipe): Promise<Recipe> {
+  const params = {
+    Item: recipe as Record<string, unknown>,
+    TableName: Table.Recipes.tableName,
+  }
+
+  await dynamoDb.put(params).promise()
+
+  return recipe
+}
+```
+
+main.ts
+```typescript
+import Recipe from '../Recipe'
+import saveRecipe from './saveRecipe'
+import getRecipes from './getRecipes'
+
+type AppSyncEvent = {
+  info: {
+    fieldName: string
+  }
+  arguments: {
+    recipe: Recipe
+  }
+}
+
+export async function handler(
+  event: AppSyncEvent
+): Promise<Record<string, unknown>[] | Recipe | string | null | undefined> {
+  switch (event.info.fieldName) {
+    case 'saveRecipe':
+      return await saveRecipe(event.arguments.recipe)
+    case 'getRecipes':
+      return await getRecipes()
+    default:
+      return null
+  }
+}
+```
+
+And finally my **index.tsx** in *stacks* folder:
+```typescript
+import { App } from '@serverless-stack/resources'
+import { StorageStack } from './StorageStack'
+import { ApiStack } from './ApiStack'
+import { RemovalPolicy } from 'aws-cdk-lib'
+
+export default function main(app: App) {
+  app.setDefaultFunctionProps({
+    runtime: 'nodejs16.x',
+    srcPath: 'services',
+    bundle: {
+      format: 'esm',
+    },
+  })
+
+  app.stack(StorageStack).stack(ApiStack).setDefaultRemovalPolicy(RemovalPolicy.DESTROY)
+}
+```
+
+> RemovalPolicy.DESTROY should be used in only development
+
+Our stack can be tested in SST Console:
+1. `yarn start`
+2. Open SST Console (link is in the terminal where `yarn start` was used)
+3. Create item
+![create items](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+12.35.16.png)
+4. Retrieve items
+![retrieve items](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+12.35.54.png)
