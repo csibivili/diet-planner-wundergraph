@@ -137,7 +137,7 @@ The referenced query's name is concatenated from two parts:
 
 ![index page](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+AM+10.36.50.png)
 
-At this point I would like to just list the search results. I have reused what I could from the original template. Again, create something nicer if you'd like. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query:
+At this point I would like to just list the search results. I have reused what I could from the original template. Again, create something nicer if you'd like. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query. The `query` parameter is bind to the input.
 
 ```typescript
 const [query, setQuery] = useState('')
