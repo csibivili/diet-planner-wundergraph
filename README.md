@@ -153,7 +153,7 @@ const recipes = useQuery({
 
 ### Get recipe's information
 
-Since the search endpoint provides just few informations about a recipe somehow the details should be retrieved. There is a get by id endpoint for this purpose. It is worth to test again the endpoint on the UI first.
+Since the search endpoint provides just few informations about a recipe somehow the details should be retrieved. There is a *"get by id"* endpoint for this purpose. It is worth to test again the endpoint on the UI first.
 
 Based on the other endpoint the new endpoint configuration should look like this:
 
