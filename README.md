@@ -472,3 +472,37 @@ In the logs you should see these lines:
 ```
 
 ### Finish the frontend
+
+1. Add a button to the details page
+2. Use the mutation
+```typescript
+const { trigger } = useMutation({
+  operationName: 'SaveRecipe',
+})
+```
+3. Call it on click
+```typescript
+const onSaveClick = () => {
+  const { food_getRecipe } = recipe.data
+  if (food_getRecipe) {
+    const { id, title, instructions } = food_getRecipe
+    trigger({
+      recipe: {
+        recipeId: String(id),
+        title,
+        instructions,
+      },
+    })
+  }
+}
+```
+
+### If you would continue
+- list my recipes
+- error handling
+- more properties to save
+
+### Coming next
+- users
+- monorepo
+- deploy
