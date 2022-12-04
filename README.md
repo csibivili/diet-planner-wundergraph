@@ -1,18 +1,23 @@
 # How to build a GraphQL diet planner app from scratch - Part I.
 
+## TLDR
+- [frontend repo](https://github.com/csibivili/diet-planner-wundergraph)
+- [backend repo](https://github.com/csibivili/diet-planner-backend)
+
 ## The problem
 
 Recently, I have been going to the gym several times a week and I was advised to try to follow a high protein diet. Since I have no knowledge about nutritions and I am a coder this gives me an opportunity to build a new app.
 
 ## Features
 
-- As a user I would like to **search recipes** based on my preference (high protein, vegan, etc).
-- As a user I would like to **create a diet** for a specific timespan.
+- As a user I would like to **search recipes** based on my preference (high protein, vegan, etc)
+- As a user I would like to **save some recipes** for later
 
 ## Services and technologies
 
 - Database: [AWS DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
 - Accessing the data: [AWS AppSync](https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html)
+- Managing backend stack: [SST](https://sst.dev/)
 - [Recipe - Food - Nutrition API](https://rapidapi.com/spoonacular/api/recipe-food-nutrition)
 - Unified solution for communicating with the different APIs: [WunderGraph](https://wundergraph.com/)
 - Client: [Next.js](https://nextjs.org/)
@@ -130,6 +135,8 @@ The referenced query's name is concatenated from two parts:
 
 ### A little frontend
 
+![index page](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+AM+10.36.50.png)
+
 At this point I would like to just list the search results. I have reused what I could from the original template. Again, create something nicer if you'd like. An important change I have made is in the `useQuery` hook. There is a `query` state variable which passed to the query:
 
 ```typescript
@@ -194,7 +201,12 @@ query Recipe($id: String!) {
 
 ### Recipe's details page
 
+![details page](https://d2mzaibvtxa92j.cloudfront.net/Screenshot%202022-12-04%20at%20AM%2010.37.26.png)
+
 1. Add linking to the **index.tsx**. Each listed element should navigate to the */{id}* route
 2. Create details page: **[id].tsx**
 3. Copy everything that we can from the index page
 4. Show the title and the istructions for the current recipe
+
+### Save the recipes we like
+
