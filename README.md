@@ -50,15 +50,14 @@ Replace the `spaceX` configuration with the below in the *wundergraph.config.ts*
 
 ```typescript
 const food = introspect.openApi({
-	apiNamespace: 'food',
-	source: {
-		kind: 'file',
-		filePath: './food-nutrition.yaml'
-	},
-	headers: builder => 
-		builder
-			.addStaticHeader('X-RapidAPI-Key', new EnvironmentVariable('RAPID_API_KEY'))
-			.addStaticHeader('X-RapidAPI-Host', 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'),
+  apiNamespace: 'food',
+  source: {
+    kind: 'file',
+    filePath: './food-nutrition.yaml'
+  },
+  headers: builder => 
+    builder.addStaticHeader('X-RapidAPI-Key', new EnvironmentVariable('RAPID_API_KEY'))
+    .addStaticHeader('X-RapidAPI-Host', 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'),
 })
 ```
 
@@ -118,12 +117,12 @@ As a last step a graphql query must be created in the **Operations** folder. Don
 
 ```graphql
 query Recipes($query: String!) {
-	food_searchRecipes(query: $query) {
-		results {
-			id
-			title
-		}
-	}
+  food_searchRecipes(query: $query) {
+    results {
+      id
+      title
+    }
+  }
 }
 ```
 
@@ -440,7 +439,7 @@ configureWunderGraphApplication({
   apis: [food, dietplanner],
   ...
 ```
-2. Add new environment variables, both can can be copied from the terminal where the stack is running.
+2. Add new environment variables, both can be copied from the terminal where the stack is running.
 
 ![keys](https://d2mzaibvtxa92j.cloudfront.net/Screenshot+2022-12-04+at+PM+2.43.43.png)
 
